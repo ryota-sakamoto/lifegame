@@ -1,5 +1,5 @@
 object Main {
-    private val size = 5
+    private val size = 6
 
     def main(args: Array[String]): Unit = {
         val list = Array.ofDim[Array[Boolean]](size)
@@ -11,10 +11,10 @@ object Main {
         for (i <- list.indices) {
             list(i) = Array.fill[Boolean](size)(false)
         }
-        list(0)(0) = true
-        list(1)(0) = true
-        list(0)(1) = true
-        list(1)(1) = true
+        list(2)(2) = true
+        list(3)(2) = true
+        list(2)(3) = true
+        list(3)(3) = true
     }
 
     def lifecycle(list: Array[Boolean]): Array[Boolean] = {
@@ -29,14 +29,27 @@ object Main {
     }
 
     def check(list: Array[Boolean], now: Int): Boolean = {
-        val surroundings = Array(-size - 1, -size, -size + 1, -1, 1, size - 1, size, size + 1)
-        val length = surroundings.map { s =>
-            if (0 > s + now || list.length < s + now) {
+        val surroundings = Array(
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1)
+        )
+        val checkSurround: ((Int, Int)) => Boolean = (s) => {
+            val index = (now / 5) + s._1
+            val row = (now % 5) + s._2
+
+            if (index < 0 || index >= size || row < 0 || row >= size) {
                 false
             } else {
-                true
+                list(size * index + row)
             }
-        }.count(_ == true)
+        }
+        val length = surroundings.map { checkSurround }.count(_ == true)
 
         if (list(now)) {
             length match {
